@@ -13,6 +13,8 @@ export const SettingsPage = () => {
 
   const [formData, setFormData] = useState({
     shopName: '',
+    companyName: 'Dreamonix Solution',
+    website: 'https://dreamonixsolution.com/',
     tagline: '',
     phone: '',
     alternatePhone: '',
@@ -35,10 +37,12 @@ export const SettingsPage = () => {
     if (shopSettings) {
       setFormData({
         shopName: shopSettings.shopName || 'COMPUTER BAZAAR',
+        companyName: shopSettings.companyName || 'Dreamonix Solution',
+        website: shopSettings.website || 'https://dreamonixsolution.com/',
         tagline: shopSettings.tagline || '',
         phone: shopSettings.phone || '',
         alternatePhone: shopSettings.alternatePhone || '',
-        email: shopSettings.email || '',
+        email: shopSettings.email || 'contact@dreamonixsolution.com',
         address: shopSettings.address || '',
         city: shopSettings.city || '',
         state: shopSettings.state || '',
@@ -107,11 +111,26 @@ export const SettingsPage = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Shop Business Name *"
+                label="Shop / Display Name *"
                 required
-                placeholder="e.g. COMPUTER BAZAAR - Computer & Laptop Solutions"
+                placeholder="e.g. COMPUTER BAZAAR"
                 value={formData.shopName}
                 onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
+              />
+              <Input
+                label="Company / Parent Enterprise Name"
+                placeholder="e.g. Dreamonix Solution"
+                value={formData.companyName}
+                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Official Website URL"
+                placeholder="https://dreamonixsolution.com/"
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
               />
               <Input
                 label="Tagline / Specialty"
@@ -186,12 +205,32 @@ export const SettingsPage = () => {
               value={formData.gstNumber}
               onChange={(e) => setFormData({ ...formData, gstNumber: e.target.value })}
             />
-            <Input
-              label="Default GST Rate (%)"
-              type="number"
-              value={formData.defaultGstRate}
-              onChange={(e) => setFormData({ ...formData, defaultGstRate: Number(e.target.value) })}
-            />
+            <div>
+              <Input
+                label="Default GST Rate (%)"
+                type="number"
+                min="0"
+                max="28"
+                value={formData.defaultGstRate}
+                onChange={(e) => setFormData({ ...formData, defaultGstRate: Number(e.target.value) })}
+              />
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {[0, 5, 12, 18, 28].map((rate) => (
+                  <button
+                    key={rate}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, defaultGstRate: rate })}
+                    className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border transition-all ${
+                      formData.defaultGstRate === rate
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    {rate === 0 ? '0% (No GST / Exempt)' : `${rate}%`}
+                  </button>
+                ))}
+              </div>
+            </div>
             <Input
               label="Sales Invoice Prefix"
               placeholder="INV"

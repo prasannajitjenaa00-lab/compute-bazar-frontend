@@ -23,7 +23,13 @@ import {
   Zap,
   Wrench,
   PlusCircle,
-  Sparkles
+  Sparkles,
+  X,
+  User,
+  Phone,
+  Building2,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import api from '../services/api';
 import { config } from '../config';
@@ -65,12 +71,55 @@ export const BillingPage = () => {
 
   // Customer state
   const [customerInfo, setCustomerInfo] = useState({
-    name: 'Walk-in Customer',
+    name: '',
     phone: '',
     email: '',
     address: '',
     gstNumber: ''
   });
+  const [showExtraCustomerFields, setShowExtraCustomerFields] = useState(false);
+  const [isCustomerDropdownOpen, setIsCustomerDropdownOpen] = useState(false);
+  const customerDropdownRef = useRef(null);
+
+  // Live Customer Search
+  const { data: customerSearchResults = [] } = useQuery({
+    queryKey: ['billing-customer-search', customerInfo.name, customerInfo.phone],
+    queryFn: async () => {
+      const q = (customerInfo.name !== 'Walk-in Customer' ? customerInfo.name : '') || customerInfo.phone;
+      if (!q || q.trim().length < 2) return [];
+      try {
+        const res = await api.get('/customers', {
+          params: { search: q.trim(), limit: 5 }
+        });
+        return res.data || [];
+      } catch (err) {
+        return [];
+      }
+    },
+    enabled: Boolean(
+      (customerInfo.name && customerInfo.name !== 'Walk-in Customer' && customerInfo.name.trim().length >= 2) ||
+      (customerInfo.phone && customerInfo.phone.trim().length >= 2)
+    )
+  });
+
+  // Close customer dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (customerDropdownRef.current && !customerDropdownRef.current.contains(e.target)) {
+        setIsCustomerDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const defaultGst =
+    shopSettings?.defaultGstRate !== undefined && shopSettings?.defaultGstRate !== null
+      ? Number(shopSettings.defaultGstRate)
+      : 18;
+
+  // Active GST Rate applied to this bill session (defaults to shop settings defaultGstRate)
+  const [appliedGstRate, setAppliedGstRate] = useState(defaultGst);
 
   // Instant Product / Service Modal state
   const [isInstantModalOpen, setIsInstantModalOpen] = useState(false);
@@ -80,9 +129,27 @@ export const BillingPage = () => {
     unitPrice: '',
     buyPrice: '',
     qty: 1,
-    gstRate: shopSettings?.defaultGstRate || 18,
+    gstRate: defaultGst,
     saveToCatalogue: false
   });
+
+  // Sync instant item and applied GST when shopSettings updates
+  useEffect(() => {
+    if (shopSettings?.defaultGstRate !== undefined && shopSettings?.defaultGstRate !== null) {
+      const rate = Number(shopSettings.defaultGstRate);
+      setAppliedGstRate(rate);
+      setInstantItem((prev) => ({
+        ...prev,
+        gstRate: rate
+      }));
+      setCart((prev) =>
+        prev.map((item) => ({
+          ...item,
+          gstRate: rate
+        }))
+      );
+    }
+  }, [shopSettings?.defaultGstRate]);
 
   // Completed Invoice Modal state
   const [completedBill, setCompletedBill] = useState(null);
@@ -156,6 +223,7 @@ export const BillingPage = () => {
         };
         return updated;
       } else {
+        const itemGst = appliedGstRate !== undefined ? appliedGstRate : (defaultGst === 0 ? 0 : ((product.gstRate !== undefined && product.gstRate !== null) ? Number(product.gstRate) : defaultGst));
         return [
           ...prev,
           {
@@ -167,7 +235,7 @@ export const BillingPage = () => {
             unitPrice: product.sellingPrice,
             stock: product.stock,
             qty: 1,
-            gstRate: shopSettings?.defaultGstRate || 18,
+            gstRate: itemGst,
             total: product.sellingPrice
           }
         ];
@@ -236,7 +304,7 @@ export const BillingPage = () => {
       unitPrice: '',
       buyPrice: '',
       qty: 1,
-      gstRate: shopSettings?.defaultGstRate || 18,
+      gstRate: defaultGst,
       saveToCatalogue: false
     });
     setIsInstantModalOpen(false);
@@ -244,6 +312,7 @@ export const BillingPage = () => {
 
   // Add Preset Instant Service Handler
   const handleAddPresetService = (preset) => {
+    const itemGst = appliedGstRate !== undefined ? appliedGstRate : defaultGst;
     const newItem = {
       product: null,
       name: preset.name,
@@ -253,7 +322,7 @@ export const BillingPage = () => {
       unitPrice: preset.price,
       stock: 999,
       qty: 1,
-      gstRate: shopSettings?.defaultGstRate || 18,
+      gstRate: itemGst,
       total: preset.price,
       isInstant: true,
       itemType: 'Service'
@@ -363,7 +432,10 @@ export const BillingPage = () => {
     }
 
     const payload = {
-      customerSnapshot: customerInfo,
+      customerSnapshot: {
+        ...customerInfo,
+        name: customerInfo.name?.trim() || 'customer name'
+      },
       items: cart,
       discountType,
       discountValue: Number(discountValue) || 0,
@@ -535,8 +607,8 @@ export const BillingPage = () => {
                     key={product._id}
                     onClick={() => inStock && addToCart(product)}
                     className={`p-3.5 rounded-2xl border transition-all text-left flex flex-col justify-between select-none ${inStock
-                        ? 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md cursor-pointer group'
-                        : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60 cursor-not-allowed'
+                      ? 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md cursor-pointer group'
+                      : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60 cursor-not-allowed'
                       }`}
                   >
                     <div>
@@ -546,8 +618,8 @@ export const BillingPage = () => {
                         </span>
                         <span
                           className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${inStock
-                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
-                              : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'
+                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
+                            : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'
                             }`}
                         >
                           {inStock ? `${product.stock} in stock` : 'Out of stock'}
@@ -584,34 +656,166 @@ export const BillingPage = () => {
         {/* Right Side: Cart, Customer Details & Checkout Summary */}
         <div className={cn('lg:col-span-5 space-y-4', mobileTab !== 'cart' && 'hidden lg:block')}>
           <Card className="p-4 space-y-4">
-            {/* Customer Details Accordion / Form */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/60 dark:border-slate-800 space-y-2.5">
+            {/* Customer Details Accordion / Form with Fast Entry & Autocomplete */}
+            <div ref={customerDropdownRef} className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/60 dark:border-slate-800 space-y-2.5 relative">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <UserPlus className="w-3.5 h-3.5 text-blue-500" />
-                  Customer Details
+                  <User className="w-3.5 h-3.5 text-blue-500" />
+                  Customer Information
                 </span>
-                {customerInfo.phone && (
-                  <span className="text-[11px] text-blue-600 dark:text-blue-400">Saved</span>
-                )}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomerInfo({
+                        name: 'Walk-in Customer',
+                        phone: '',
+                        email: '',
+                        address: '',
+                        gstNumber: ''
+                      });
+                      setIsCustomerDropdownOpen(false);
+                      toast.success('Reset to Walk-in Customer');
+                    }}
+                    className="px-2 py-0.5 text-[10px] font-semibold rounded bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Walk-in
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowExtraCustomerFields(!showExtraCustomerFields)}
+                    className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                  >
+                    {showExtraCustomerFields ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    {showExtraCustomerFields ? 'Less' : '+ GST/Address'}
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Customer Name"
-                  value={customerInfo.name}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Phone (10 Digits)"
-                  value={customerInfo.phone}
-                  onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
+              {/* Main Name & Phone Inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 relative">
+                {/* Customer Name with Instant Auto-Select and Clear Icon */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Customer Name..."
+                    value={customerInfo.name}
+                    onFocus={(e) => {
+                      e.target.select();
+                      setIsCustomerDropdownOpen(true);
+                    }}
+                    onChange={(e) => {
+                      setCustomerInfo({ ...customerInfo, name: e.target.value });
+                      setIsCustomerDropdownOpen(true);
+                    }}
+                    className="w-full pl-2.5 pr-7 py-1.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                  {customerInfo.name && customerInfo.name !== 'Walk-in Customer' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomerInfo({ ...customerInfo, name: '' });
+                        setIsCustomerDropdownOpen(false);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Customer Phone */}
+                <div className="relative">
+                  <input
+                    type="tel"
+                    placeholder="Phone (WhatsApp)"
+                    value={customerInfo.phone}
+                    onChange={(e) => {
+                      setCustomerInfo({ ...customerInfo, phone: e.target.value });
+                      setIsCustomerDropdownOpen(true);
+                    }}
+                    className="w-full pl-2.5 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                  {customerInfo.phone && (
+                    <button
+                      type="button"
+                      onClick={() => setCustomerInfo({ ...customerInfo, phone: '' })}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {/* Autocomplete Dropdown List */}
+              {isCustomerDropdownOpen && customerSearchResults.length > 0 && (
+                <div className="absolute left-3 right-3 top-[76px] z-50 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 max-h-48 overflow-y-auto">
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-slate-800/60">
+                    Existing Customers ({customerSearchResults.length})
+                  </div>
+                  {customerSearchResults.map((cust) => (
+                    <div
+                      key={cust._id}
+                      onClick={() => {
+                        setCustomerInfo({
+                          name: cust.name,
+                          phone: cust.phone || '',
+                          email: cust.email || '',
+                          address: cust.address || '',
+                          gstNumber: cust.gstNumber || ''
+                        });
+                        setIsCustomerDropdownOpen(false);
+                        toast.success(`Selected customer: ${cust.name}`);
+                      }}
+                      className="p-2.5 hover:bg-blue-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between transition-colors text-xs"
+                    >
+                      <div>
+                        <p className="font-bold text-slate-900 dark:text-slate-100">{cust.name}</p>
+                        <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-emerald-500" />
+                          {cust.phone || 'No phone'}
+                          {cust.city ? ` • ${cust.city}` : ''}
+                        </p>
+                      </div>
+                      {cust.gstNumber && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300 font-mono">
+                          GST
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Optional Extra Fields: GSTIN, Email, Address */}
+              {showExtraCustomerFields && (
+                <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <input
+                    type="text"
+                    placeholder="GSTIN (e.g. 27ABCDE1234F1Z5)"
+                    value={customerInfo.gstNumber}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, gstNumber: e.target.value.toUpperCase() })}
+                    className="px-2.5 py-1.5 text-xs uppercase rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    value={customerInfo.email}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                    className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  />
+                  <div className="sm:col-span-2">
+                    <input
+                      type="text"
+                      placeholder="Billing Address / City"
+                      value={customerInfo.address}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Cart Items List */}
@@ -650,8 +854,8 @@ export const BillingPage = () => {
                           {item.isInstant && (
                             <span
                               className={`px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${item.itemType === 'Service'
-                                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
-                                  : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                                ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
+                                : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
                                 }`}
                             >
                               {item.itemType || 'Instant'}
@@ -738,13 +942,58 @@ export const BillingPage = () => {
                 </div>
               </div>
 
-              {/* GST Tax */}
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                <span>Estimated GST</span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
-                  {formatCurrency(taxAmount, shopSettings?.currencySymbol)}
-                </span>
+              {/* GST Tax Mode Selector */}
+              <div className="flex items-center justify-between gap-2 py-1">
+                <span className="text-slate-600 dark:text-slate-400">GST / Tax Mode</span>
+                <div className="flex items-center gap-1">
+                  {[
+                    { label: '0% (No GST)', rate: 0 },
+                    { label: '5%', rate: 5 },
+                    { label: '12%', rate: 12 },
+                    { label: '18%', rate: 18 },
+                    { label: '28%', rate: 28 }
+                  ].map((option) => (
+                    <button
+                      key={option.rate}
+                      type="button"
+                      onClick={() => {
+                        setAppliedGstRate(option.rate);
+                        setCart((prev) =>
+                          prev.map((item) => ({
+                            ...item,
+                            gstRate: option.rate
+                          }))
+                        );
+                      }}
+                      className={`px-1.5 py-0.5 text-[10px] font-semibold rounded border transition-all ${
+                        appliedGstRate === option.rate
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* GST Tax Breakdown */}
+              {taxAmount > 0 && (
+                <>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>CGST ({((appliedGstRate || cart[0]?.gstRate || 0) / 2).toFixed(1).replace(/\.0$/, '')}%)</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {formatCurrency(taxAmount / 2, shopSettings?.currencySymbol)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>SGST ({((appliedGstRate || cart[0]?.gstRate || 0) / 2).toFixed(1).replace(/\.0$/, '')}%)</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {formatCurrency(taxAmount / 2, shopSettings?.currencySymbol)}
+                    </span>
+                  </div>
+                </>
+              )}
 
               {/* Grand Total */}
               <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl flex items-center justify-between">
@@ -766,8 +1015,8 @@ export const BillingPage = () => {
                       type="button"
                       onClick={() => setPaymentMode(mode)}
                       className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${paymentMode === mode
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
                         }`}
                     >
                       {mode}
@@ -792,8 +1041,8 @@ export const BillingPage = () => {
                   <label className="block text-[11px] text-slate-500 mb-0.5">Due Balance</label>
                   <div
                     className={`px-2.5 py-1.5 text-xs font-bold rounded-lg border ${dueAmount > 0
-                        ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/40 dark:border-rose-900'
-                        : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900'
+                      ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/40 dark:border-rose-900'
+                      : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900'
                       }`}
                   >
                     {formatCurrency(dueAmount, shopSettings?.currencySymbol)}
@@ -950,8 +1199,8 @@ export const BillingPage = () => {
                 type="button"
                 onClick={() => setInstantItem((prev) => ({ ...prev, type: 'Service' }))}
                 className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${instantItem.type === 'Service'
-                    ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/20'
-                    : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                  ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/20'
+                  : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
                   }`}
               >
                 <Wrench className="w-4 h-4" />
@@ -961,8 +1210,8 @@ export const BillingPage = () => {
                 type="button"
                 onClick={() => setInstantItem((prev) => ({ ...prev, type: 'Product' }))}
                 className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${instantItem.type === 'Product'
-                    ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20'
-                    : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                  ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20'
+                  : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
                   }`}
               >
                 <Boxes className="w-4 h-4" />

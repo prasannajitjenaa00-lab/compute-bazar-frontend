@@ -7,9 +7,11 @@ const ShopContext = createContext();
 export const ShopProvider = ({ children }) => {
   const [shopSettings, setShopSettings] = useState({
     shopName: config.appName,
+    companyName: 'Dreamonix Solution',
+    website: 'https://dreamonixsolution.com/',
     tagline: 'Computer, Laptop, CCTV & Networking Solutions',
     phone: '+91 98765 43210',
-    email: 'contact@computerbazaar.com',
+    email: 'contact@dreamonixsolution.com',
     address: 'Shop #12, Tech Plaza',
     city: 'City',
     state: 'State',
