@@ -4,10 +4,10 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 export const PrintableInvoice = ({ bill, shopSettings = {} }) => {
   if (!bill) return null;
 
-  const shopName = shopSettings.shopName || 'PC Doctor';
+  const shopName = shopSettings.shopName || 'COMPUTER BAZAAR';
   const tagline = shopSettings.tagline || 'Computer, Laptop, CCTV & Networking Solutions';
   const phone = shopSettings.phone || '+91 98765 43210';
-  const email = shopSettings.email || 'contact@pcdoctor.com';
+  const email = shopSettings.email || 'contact@computerbazaar.com';
   const address = shopSettings.address || '';
   const city = shopSettings.city || '';
   const state = shopSettings.state || '';

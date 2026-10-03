@@ -534,11 +534,10 @@ export const BillingPage = () => {
                   <div
                     key={product._id}
                     onClick={() => inStock && addToCart(product)}
-                    className={`p-3.5 rounded-2xl border transition-all text-left flex flex-col justify-between select-none ${
-                      inStock
+                    className={`p-3.5 rounded-2xl border transition-all text-left flex flex-col justify-between select-none ${inStock
                         ? 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md cursor-pointer group'
                         : 'bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-60 cursor-not-allowed'
-                    }`}
+                      }`}
                   >
                     <div>
                       <div className="flex items-start justify-between gap-1 mb-1">
@@ -546,11 +545,10 @@ export const BillingPage = () => {
                           {product.category?.name || 'General'}
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-                            inStock
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${inStock
                               ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
                               : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'
-                          }`}
+                            }`}
                         >
                           {inStock ? `${product.stock} in stock` : 'Out of stock'}
                         </span>
@@ -651,11 +649,10 @@ export const BillingPage = () => {
                           <span className="truncate">{item.name}</span>
                           {item.isInstant && (
                             <span
-                              className={`px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${
-                                item.itemType === 'Service'
+                              className={`px-1.5 py-0.5 text-[9px] font-bold uppercase rounded ${item.itemType === 'Service'
                                   ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
                                   : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                              }`}
+                                }`}
                             >
                               {item.itemType || 'Instant'}
                             </span>
@@ -768,11 +765,10 @@ export const BillingPage = () => {
                       key={mode}
                       type="button"
                       onClick={() => setPaymentMode(mode)}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${
-                        paymentMode === mode
+                      className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${paymentMode === mode
                           ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
-                      }`}
+                        }`}
                     >
                       {mode}
                     </button>
@@ -795,11 +791,10 @@ export const BillingPage = () => {
                 <div>
                   <label className="block text-[11px] text-slate-500 mb-0.5">Due Balance</label>
                   <div
-                    className={`px-2.5 py-1.5 text-xs font-bold rounded-lg border ${
-                      dueAmount > 0
+                    className={`px-2.5 py-1.5 text-xs font-bold rounded-lg border ${dueAmount > 0
                         ? 'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/40 dark:border-rose-900'
                         : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900'
-                    }`}
+                      }`}
                   >
                     {formatCurrency(dueAmount, shopSettings?.currencySymbol)}
                   </div>
@@ -954,11 +949,10 @@ export const BillingPage = () => {
               <button
                 type="button"
                 onClick={() => setInstantItem((prev) => ({ ...prev, type: 'Service' }))}
-                className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  instantItem.type === 'Service'
+                className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${instantItem.type === 'Service'
                     ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/20'
                     : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 <Wrench className="w-4 h-4" />
                 <span>Instant Service / Labour</span>
@@ -966,11 +960,10 @@ export const BillingPage = () => {
               <button
                 type="button"
                 onClick={() => setInstantItem((prev) => ({ ...prev, type: 'Product' }))}
-                className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  instantItem.type === 'Product'
+                className={`py-2.5 px-4 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2 cursor-pointer ${instantItem.type === 'Product'
                     ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20'
                     : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 <Boxes className="w-4 h-4" />
                 <span>Instant Product / Accessory</span>

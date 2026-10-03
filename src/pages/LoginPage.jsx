@@ -97,7 +97,7 @@ export const LoginPage = () => {
               <div className="relative inline-flex items-center justify-center p-3 rounded-2xl bg-slate-950 border border-slate-700/80 shadow-2xl shadow-blue-500/20 ring-2 ring-slate-800/80 animate-float">
                 <img
                   src="/logo.png"
-                  alt="PC Doctor Logo"
+                  alt="COMPUTER BAZAAR Logo"
                   className="w-16 h-16 object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
@@ -109,7 +109,7 @@ export const LoginPage = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              {shopSettings?.shopName || 'PC Doctor'}
+              {shopSettings?.shopName || 'COMPUTER BAZAAR'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium">
               Repair Management & POS Billing System
@@ -145,7 +145,7 @@ export const LoginPage = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin or admin@pcdoctor.com"
+                  placeholder="admin or admin@computerbazaar.com"
                   className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all"
                   autoComplete="username"
                   autoFocus
@@ -263,7 +263,7 @@ export const LoginPage = () => {
 
         {/* Footer info */}
         <p className="text-center text-xs text-slate-600 mt-6">
-          PC Doctor v2.0 • Secure POS & Repair Station System
+          COMPUTER BAZAAR v2.0 • Secure POS & Repair Station System
         </p>
       </div>
     </div>

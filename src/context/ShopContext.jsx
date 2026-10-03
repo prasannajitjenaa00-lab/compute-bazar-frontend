@@ -9,7 +9,7 @@ export const ShopProvider = ({ children }) => {
     shopName: config.appName,
     tagline: 'Computer, Laptop, CCTV & Networking Solutions',
     phone: '+91 98765 43210',
-    email: 'contact@pcdoctor.com',
+    email: 'contact@computerbazaar.com',
     address: 'Shop #12, Tech Plaza',
     city: 'City',
     state: 'State',
@@ -23,8 +23,9 @@ export const ShopProvider = ({ children }) => {
   });
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('pc_doctor_theme') === 'dark' ||
-      (!('pc_doctor_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    return localStorage.getItem('computer_bazaar_theme') === 'dark' ||
+      localStorage.getItem('pc_doctor_theme') === 'dark' ||
+      (!('computer_bazaar_theme' in localStorage) && !('pc_doctor_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
   const [loading, setLoading] = useState(true);
@@ -33,10 +34,10 @@ export const ShopProvider = ({ children }) => {
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('pc_doctor_theme', 'dark');
+      localStorage.setItem('computer_bazaar_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('pc_doctor_theme', 'light');
+      localStorage.setItem('computer_bazaar_theme', 'light');
     }
   }, [isDarkMode]);
 

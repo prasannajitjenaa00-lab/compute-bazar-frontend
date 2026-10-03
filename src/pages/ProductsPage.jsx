@@ -188,7 +188,7 @@ export const ProductsPage = () => {
             icon={Sparkles}
             loading={seedDemoProductsMutation.isPending}
             onClick={() => seedDemoProductsMutation.mutate()}
-            title="Populate catalogue with realistic PC Doctor demo products"
+            title="Populate catalogue with realistic COMPUTER BAZAAR demo products"
             className="w-full sm:w-auto text-xs sm:text-sm px-2.5 sm:px-4"
           >
             Dummy Products
@@ -333,7 +333,7 @@ export const ProductsPage = () => {
                         No products in catalogue yet
                       </h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                        Get started immediately by loading realistic PC Doctor dummy products or creating your own.
+                        Get started immediately by loading realistic COMPUTER BAZAAR dummy products or creating your own.
                       </p>
                     </div>
                     <div className="flex items-center gap-3 mt-2">

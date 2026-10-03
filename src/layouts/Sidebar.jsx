@@ -65,11 +65,11 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
             <div className="relative shrink-0">
               {/* Glowing animated aura */}
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 opacity-40 blur-sm group-hover:opacity-85 transition duration-500 animate-glow" />
-              
+
               <div className="relative w-14 h-14 rounded-2xl bg-slate-950 flex items-center justify-center p-1 shadow-xl shadow-slate-900/30 ring-2 ring-slate-800/70 overflow-hidden shrink-0 group-hover:scale-105 transition-all duration-300 animate-float">
                 <img
                   src="/logo.png"
-                  alt="PC Doctor Logo"
+                  alt="COMPUTER BAZAAR Logo"
                   className="w-full h-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-110"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
@@ -84,7 +84,7 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
 
             <div className="flex-1 min-w-0">
               <h1 className="text-base font-black text-slate-900 dark:text-white truncate tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {shopSettings?.shopName || 'PC Doctor'}
+                {shopSettings?.shopName || 'COMPUTER BAZAAR'}
               </h1>
               <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate flex items-center gap-1.5 mt-0.5">
                 <span className="relative flex h-2 w-2 shrink-0">

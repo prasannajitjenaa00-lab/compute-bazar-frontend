@@ -5,8 +5,8 @@ import { config } from '../config';
 
 const AuthContext = createContext(null);
 
-const STORAGE_TOKEN_KEY = 'pc_doctor_token';
-const STORAGE_USER_KEY = 'pc_doctor_user';
+const STORAGE_TOKEN_KEY = 'computer_bazaar_token';
+const STORAGE_USER_KEY = 'computer_bazaar_user';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
   // Restore session from localStorage on initial boot
   useEffect(() => {
     try {
-      const savedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
-      const savedUserStr = localStorage.getItem(STORAGE_USER_KEY);
+      const savedToken = localStorage.getItem(STORAGE_TOKEN_KEY) || localStorage.getItem('pc_doctor_token');
+      const savedUserStr = localStorage.getItem(STORAGE_USER_KEY) || localStorage.getItem('pc_doctor_user');
 
       if (savedToken && savedUserStr) {
         const parsedUser = JSON.parse(savedUserStr);
@@ -54,12 +54,12 @@ export const AuthProvider = ({ children }) => {
       // Offline / fallback demo login support (only if enabled via config)
       if (config.isDemoLoginEnabled) {
         const trimmedUser = username.trim().toLowerCase();
-        if ((trimmedUser === 'admin' || trimmedUser === 'admin@pcdoctor.com') && password === 'admin123') {
+        if ((trimmedUser === 'admin' || trimmedUser === 'admin@computerbazaar.com' || trimmedUser === 'admin@pcdoctor.com') && password === 'admin123') {
           const demoUser = {
             id: 'demo-admin-id',
-            name: 'Dr. PC Admin',
+            name: 'COMPUTER BAZAAR Admin',
             username: 'admin',
-            email: 'admin@pcdoctor.com',
+            email: 'admin@computerbazaar.com',
             role: 'admin',
             lastLogin: new Date().toISOString()
           };

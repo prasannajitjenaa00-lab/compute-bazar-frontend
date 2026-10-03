@@ -13,7 +13,7 @@ const api = axios.create({
 // Request Interceptor: Attach Authorization Bearer token if present
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('pc_doctor_token');
+    const token = localStorage.getItem('computer_bazaar_token') || localStorage.getItem('pc_doctor_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

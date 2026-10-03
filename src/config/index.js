@@ -19,7 +19,7 @@ export const config = {
   isDemoLoginEnabled: env.VITE_ENABLE_DEMO_LOGIN === 'true' || (env.DEV && env.VITE_ENABLE_DEMO_LOGIN !== 'false'),
 
   // Branding & Regional Defaults
-  appName: env.VITE_APP_NAME || 'PC Doctor',
+  appName: env.VITE_APP_NAME || 'COMPUTER BAZAAR',
   defaultCurrency: env.VITE_APP_CURRENCY || '₹',
   defaultCountryCode: env.VITE_DEFAULT_COUNTRY_CODE || '91',
   whatsAppBaseUrl: sanitizeUrl(env.VITE_WHATSAPP_BASE_URL || 'https://wa.me'),

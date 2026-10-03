@@ -34,7 +34,7 @@ export const SettingsPage = () => {
   useEffect(() => {
     if (shopSettings) {
       setFormData({
-        shopName: shopSettings.shopName || 'PC Doctor',
+        shopName: shopSettings.shopName || 'COMPUTER BAZAAR',
         tagline: shopSettings.tagline || '',
         phone: shopSettings.phone || '',
         alternatePhone: shopSettings.alternatePhone || '',
@@ -109,7 +109,7 @@ export const SettingsPage = () => {
               <Input
                 label="Shop Business Name *"
                 required
-                placeholder="e.g. PC Doctor - Computer & Laptop Solutions"
+                placeholder="e.g. COMPUTER BAZAAR - Computer & Laptop Solutions"
                 value={formData.shopName}
                 onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
               />
@@ -137,7 +137,7 @@ export const SettingsPage = () => {
               />
               <Input
                 label="Shop Email"
-                placeholder="support@pcdoctor.com"
+                placeholder="support@computerbazaar.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />

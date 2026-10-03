@@ -52,7 +52,7 @@ export const Header = ({ onToggleMobile }) => {
           </div>
           <div className="min-w-0">
             <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider truncate">
-              {shopSettings?.shopName || 'PC Doctor'}
+              {shopSettings?.shopName || 'COMPUTER BAZAAR'}
             </p>
             <p className="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-medium">{todayStr}</p>
           </div>
