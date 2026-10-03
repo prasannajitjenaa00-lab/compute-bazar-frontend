@@ -5,7 +5,7 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const proxyTarget = env.VITE_SERVER_URL || 'http://localhost:5000';
+  const proxyTarget = env.VITE_SERVER_URL || 'http://localhost:5002';
 
   return {
     plugins: [react()],

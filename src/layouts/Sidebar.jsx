@@ -157,7 +157,7 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                  {user?.name || 'Dr. PC Admin'}
+                  {user?.name || 'COMPUTER BAZAAR Admin'}
                 </p>
                 <p className="text-[10px] text-blue-600 dark:text-blue-400 capitalize font-medium truncate flex items-center gap-1.5 mt-0.5">
                   <span className="relative flex h-1.5 w-1.5 shrink-0">

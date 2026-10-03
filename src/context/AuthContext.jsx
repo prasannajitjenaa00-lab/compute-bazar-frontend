@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
   // Restore session from localStorage on initial boot
   useEffect(() => {
     try {
-      const savedToken = localStorage.getItem(STORAGE_TOKEN_KEY) || localStorage.getItem('pc_doctor_token');
-      const savedUserStr = localStorage.getItem(STORAGE_USER_KEY) || localStorage.getItem('pc_doctor_user');
+      const savedToken = localStorage.getItem(STORAGE_TOKEN_KEY);
+      const savedUserStr = localStorage.getItem(STORAGE_USER_KEY);
 
       if (savedToken && savedUserStr) {
         const parsedUser = JSON.parse(savedUserStr);
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
       // Offline / fallback demo login support (only if enabled via config)
       if (config.isDemoLoginEnabled) {
         const trimmedUser = username.trim().toLowerCase();
-        if ((trimmedUser === 'admin' || trimmedUser === 'admin@computerbazaar.com' || trimmedUser === 'admin@pcdoctor.com') && password === 'admin123') {
+        if ((trimmedUser === 'admin' || trimmedUser === 'admin@computerbazaar.com') && password === 'admin123') {
           const demoUser = {
             id: 'demo-admin-id',
             name: 'COMPUTER BAZAAR Admin',

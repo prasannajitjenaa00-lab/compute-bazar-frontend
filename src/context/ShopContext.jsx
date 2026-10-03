@@ -26,8 +26,7 @@ export const ShopProvider = ({ children }) => {
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('computer_bazaar_theme') === 'dark' ||
-      localStorage.getItem('pc_doctor_theme') === 'dark' ||
-      (!('computer_bazaar_theme' in localStorage) && !('pc_doctor_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      (!('computer_bazaar_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
 
   const [loading, setLoading] = useState(true);
@@ -51,7 +50,16 @@ export const ShopProvider = ({ children }) => {
       setLoading(true);
       const res = await api.get('/settings');
       if (res.data) {
-        setShopSettings(res.data);
+        const data = res.data;
+        // Ensure legacy DB values do not override Computer Bazaar branding
+        if (data.shopName && /pc doctor/i.test(data.shopName)) {
+          data.shopName = config.appName;
+        }
+        setShopSettings((prev) => ({
+          ...prev,
+          ...data,
+          shopName: data.shopName && !/pc doctor/i.test(data.shopName) ? data.shopName : config.appName
+        }));
       }
     } catch (err) {
       console.warn('Using default shop settings:', err.message);

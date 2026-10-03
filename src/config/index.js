@@ -11,7 +11,7 @@ const sanitizeUrl = (url = '') => url.replace(/\/+$/, '');
 export const config = {
   // API & Backend URLs
   apiBaseUrl: sanitizeUrl(env.VITE_API_BASE_URL || env.VITE_API_URL || '/api'),
-  serverUrl: sanitizeUrl(env.VITE_SERVER_URL || 'http://localhost:5000'),
+  serverUrl: sanitizeUrl(env.VITE_SERVER_URL || 'http://localhost:5002'),
 
   // Environment & Security Flags
   isProduction: env.PROD || env.MODE === 'production',
